@@ -1,0 +1,33 @@
+---
+// src/components/Navbar.astro
+---
+<nav class="bg-transparent py-4">
+  <div class="container mx-auto flex justify-between items-center px-6">
+    <div class="flex items-center">
+      <a href="/" class="text-white text-2xl font-bold">{ } DevAPI</a>
+    </div>
+    <div class="hidden md:flex items-center space-x-6">
+      <a href="#" class="text-gray-300 hover:text-white">Features</a>
+      <a href="#" class="text-gray-300 hover:text-white">Documentation</a>
+      <a href="#" class="text-gray-300 hover:text-white">Pricing</a>
+      <a href="#" class="text-gray-300 hover:text-white">Blog</a>
+    </div>
+    <div class="hidden md:flex items-center space-x-4">
+      <a href="#" class="text-gray-300 hover:text-white">Sign in</a>
+      <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Get started</a>
+    </div>
+    <div class="md:hidden">
+      <button class="text-gray-300 hover:text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<style>
+  nav {
+    background-color: #0c111f; /* Dark blue background */
+  }
+</style>
