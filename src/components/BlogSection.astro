@@ -1,0 +1,77 @@
+---
+// src/components/BlogSection.astro
+import { Image } from 'astro:assets';
+
+// Import Pexels photos
+import pexelsPhoto1 from '../assets/pexels-photo-546819.jpeg';
+import pexelsPhoto2 from '../assets/pexels-photo-1181675.jpeg';
+import pexelsPhoto3 from '../assets/pexels-photo-1181671.jpeg';
+
+const blogPosts = [
+  {
+    date: 'Mar 15, 2025',
+    readingTime: '5 min read',
+    title: 'Building Scalable APIs with DevAPI',
+    description: 'Learn how to build and deploy scalable APIs using our platform\'s advanced features and best practices.',
+    link: '#',
+    image: pexelsPhoto1,
+    alt: 'Close-up of code on a screen',
+  },
+  {
+    date: 'Mar 10, 2025',
+    readingTime: '7 min read',
+    title: 'Authentication Best Practices',
+    description: 'Implement secure authentication in your APIs using our built-in authentication system.',
+    link: '#',
+    image: pexelsPhoto2,
+    alt: 'Person holding a Python programming book',
+  },
+  {
+    date: 'Mar 5, 2025',
+    readingTime: '6 min read',
+    title: 'Optimizing API Performance',
+    description: 'Tips and tricks to optimize your API\'s performance and reduce latency using our platform.',
+    link: '#',
+    image: pexelsPhoto3,
+    alt: 'Developer working on multiple monitors with code displayed',
+  },
+];
+---
+
+<section class="bg-transparent text-white py-20">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold">Latest from our blog</h2>
+      <p class="text-gray-400 text-lg">Insights, tutorials, and updates from our team</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {blogPosts.map(post => (
+        <div class="bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+          <a href={post.link} class="block">
+            <Image src={post.image} alt={post.alt} class="w-full h-48 object-cover" densities={[1, 1.5, 2]} />
+          </a>
+          <div class="p-6 flex flex-col flex-grow">
+            <p class="text-gray-400 text-sm mb-1">{post.date} &bull; {post.readingTime}</p>
+            <h3 class="text-xl font-bold mb-2">
+              <a href={post.link} class="hover:text-blue-400 transition-colors">{post.title}</a>
+            </h3>
+            <p class="text-gray-300 text-sm mb-4 flex-grow">{post.description}</p>
+            <a href={post.link} class="text-blue-500 hover:text-blue-400 font-semibold text-sm self-start">
+              Read more &rarr;
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    background-color: #0c111f; /* Dark blue background */
+  }
+  .bg-gray-800 {
+    background-color: #1f2937; /* Slightly lighter card background */
+  }
+</style>

@@ -3,7 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import BuiltForDevelopers from '../components/BuiltForDevelopers.astro';
-import ApiDevelopment from '../components/ApiDevelopment.astro'; // Added import
+import ApiDevelopment from '../components/ApiDevelopment.astro';
+import Documentation from '../components/Documentation.astro';
+import Pricing from '../components/Pricing.astro';
+import BlogSection from '../components/BlogSection.astro';
+import ReadyToBuild from '../components/ReadyToBuild.astro'; // Added import
 import '../styles/global.css';
 ---
 
@@ -11,6 +15,10 @@ import '../styles/global.css';
   <Navbar />
   <Hero />
   <BuiltForDevelopers />
-  <ApiDevelopment /> {/* Added component */}
+  <ApiDevelopment />
+  <Documentation />
+  <Pricing />
+  <BlogSection />
+  <ReadyToBuild /> {/* Added component */}
 </Layout>
 
