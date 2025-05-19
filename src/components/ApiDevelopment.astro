@@ -1,0 +1,72 @@
+---
+// src/components/ApiDevelopment.astro
+---
+<section class="bg-transparent text-white py-20">
+  <div class="container mx-auto px-6 text-center">
+    <h2 class="text-4xl font-bold mb-4">Simple, powerful, and intuitive</h2>
+    <p class="text-gray-400 mb-12 text-lg">Just a few lines of code to get your API up and running.</p>
+
+    <div class="bg-gray-800 rounded-lg shadow-xl text-left max-w-4xl mx-auto">
+      <div class="flex items-center justify-between p-4 border-b border-gray-700">
+        <span class="text-gray-400 text-sm">Example.js</span>
+        <button class="text-gray-400 hover:text-white" title="Copy to clipboard">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+        </button>
+      </div>
+      <div class="p-4 overflow-x-auto">
+        <pre class="text-sm">
+<code class="language-javascript whitespace-pre font-mono" is:raw>
+<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
+<span class="text-gray-500"> 2 | </span>
+<span class="text-gray-500"> 3 | </span><span class="text-gray-500">// Initialize the client</span>
+<span class="text-gray-500"> 4 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({
+<span class="text-gray-500"> 5 | </span>  apiKey: <span class="text-green-400">'YOUR_API_KEY'</span>, <span class="text-gray-500">// Get yours from devapi.app</span>
+<span class="text-gray-500"> 6 | </span>  apiSecret: <span class="text-green-400">'YOUR_API_SECRET'</span>
+<span class="text-gray-500"> 7 | </span>});
+<span class="text-gray-500"> 8 | </span>
+<span class="text-gray-500"> 9 | </span><span class="text-gray-500">// Create a new endpoint</span>
+<span class="text-gray-500">10 | </span><span class="text-purple-400">const</span> userEndpoint = api.<span class="text-yellow-400">createEndpoint</span>({
+<span class="text-gray-500">11 | </span>  path: <span class="text-green-400">'/users/:id'</span>,
+<span class="text-gray-500">12 | </span>  method: <span class="text-green-400">'GET'</span>,
+<span class="text-gray-500">13 | </span>  <span class="text-blue-400">async</span> <span class="text-yellow-400">handler</span>(<span class="text-orange-400">req</span>, <span class="text-orange-400">res</span>) {
+<span class="text-gray-500">14 | </span>    <span class="text-purple-400">const</span> { <span class="text-orange-400">id</span> } = req.<span class="text-yellow-400">params</span>;
+<span class="text-gray-500">15 | </span>    <span class="text-gray-500">// Fetch user from database or another service</span>
+<span class="text-gray-500">16 | </span>    <span class="text-purple-400">const</span> user = { id, name: <span class="text-green-400">'Jane Doe'</span>, email: <span class="text-green-400">'jane@example.com'</span> };
+<span class="text-gray-500">17 | </span>    <span class="text-purple-400">return</span> res.<span class="text-yellow-400">json</span>(user);
+<span class="text-gray-500">18 | </span>  }
+<span class="text-gray-500">19 | </span>});
+<span class="text-gray-500">20 | </span>
+<span class="text-gray-500">21 | </span><span class="text-gray-500">// Deploy your API with one command</span>
+<span class="text-gray-500">22 | </span>api.<span class="text-yellow-400">deploy</span>().<span class="text-yellow-400">then</span>(() => {
+<span class="text-gray-500">23 | </span>  <span class="text-yellow-400">console</span>.<span class="text-blue-400">log</span>(<span class="text-green-400">'🚀 API deployed successfully!'</span>);
+<span class="text-gray-500">24 | </span>});
+</code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    background-color: #0c111f; /* Dark blue background */
+  }
+  .bg-gray-800 {
+    background-color: #161e2d; /* Slightly darker terminal background */
+  }
+  /* Custom scrollbar for WebKit browsers */
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: #1f2937; /* scrollbar track */
+    border-radius: 4px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #374151; /* scrollbar thumb */
+    border-radius: 4px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #4b5563; /* scrollbar thumb on hover */
+  }
+</style>
