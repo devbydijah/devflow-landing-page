@@ -7,18 +7,26 @@ import ApiDevelopment from '../components/ApiDevelopment.astro';
 import Documentation from '../components/Documentation.astro';
 import Pricing from '../components/Pricing.astro';
 import BlogSection from '../components/BlogSection.astro';
-import ReadyToBuild from '../components/ReadyToBuild.astro'; // Added import
+import ReadyToBuild from '../components/ReadyToBuild.astro';
+import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 ---
 
-<Layout>
+<Layout title="DevAPI - The Developer-First API Platform">
   <Navbar />
-  <Hero />
-  <BuiltForDevelopers />
-  <ApiDevelopment />
-  <Documentation />
-  <Pricing />
-  <BlogSection />
-  <ReadyToBuild /> {/* Added component */}
+  <main>
+    <Hero />
+    <BuiltForDevelopers />
+    <ApiDevelopment />
+    <Documentation />
+    <Pricing />
+    <BlogSection />
+    <ReadyToBuild />
+    <Footer />
+  </main>
 </Layout>
+
+<style is:global>
+  /* ...existing global styles... */
+</style>
 
