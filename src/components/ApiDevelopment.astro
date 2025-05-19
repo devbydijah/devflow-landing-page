@@ -1,48 +1,248 @@
 ---
 // src/components/ApiDevelopment.astro
+import { Copy } from 'lucide-astro';
+
+const codeExamples = {
+  'REST API': `
+<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
+<span class="text-gray-500"> 2 | </span>
+<span class="text-gray-500"> 3 | </span><span class="text-gray-500">// Initialize the client</span>
+<span class="text-gray-500"> 4 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({
+<span class="text-gray-500"> 5 | </span>  apiKey: <span class="text-green-400">'YOUR_API_KEY'</span>,
+<span class="text-gray-500"> 6 | </span>  apiSecret: <span class="text-green-400">'YOUR_API_SECRET'</span>
+<span class="text-gray-500"> 7 | </span>});
+<span class="text-gray-500"> 8 | </span>
+<span class="text-gray-500"> 9 | </span><span class="text-gray-500">// Create a REST endpoint</span>
+<span class="text-gray-500">10 | </span>api.<span class="text-yellow-400">createEndpoint</span>({
+<span class="text-gray-500">11 | </span>  path: <span class="text-green-400">'/users/:id'</span>,
+<span class="text-gray-500">12 | </span>  method: <span class="text-green-400">'GET'</span>,
+<span class="text-gray-500">13 | </span>  <span class="text-blue-400">async</span> <span class="text-yellow-400">handler</span>(<span class="text-orange-400">req</span>, <span class="text-orange-400">res</span>) {
+<span class="text-gray-500">14 | </span>    <span class="text-purple-400">const</span> { <span class="text-orange-400">id</span> } = req.<span class="text-yellow-400">params</span>;
+<span class="text-gray-500">15 | </span>    <span class="text-purple-400">const</span> user = { id, name: <span class="text-green-400">'Jane Doe'</span> };
+<span class="text-gray-500">16 | </span>    <span class="text-purple-400">return</span> res.<span class="text-yellow-400">json</span>(user);
+<span class="text-gray-500">17 | </span>  }
+<span class="text-gray-500">18 | </span>});
+<span class="text-gray-500">19 | </span>
+<span class="text-gray-500">20 | </span>api.<span class="text-yellow-400">deploy</span>();`,
+  'GraphQL': `
+<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span>, <span class="text-yellow-400">gql</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
+<span class="text-gray-500"> 2 | </span>
+<span class="text-gray-500"> 3 | </span><span class="text-gray-500">// Initialize the client</span>
+<span class="text-gray-500"> 4 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({ <span class="text-comment-500">/* ... */</span> });
+<span class="text-gray-500"> 5 | </span>
+<span class="text-gray-500"> 6 | </span><span class="text-gray-500">// Define GraphQL Schema</span>
+<span class="text-gray-500"> 7 | </span><span class="text-purple-400">const</span> typeDefs = <span class="text-yellow-400">gql</span>\`
+<span class="text-gray-500"> 8 | </span>  <span class="text-blue-400">type</span> <span class="text-green-400">User</span> {
+<span class="text-gray-500"> 9 | </span>    id: <span class="text-red-400">ID!</span>
+<span class="text-gray-500">10 | </span>    name: <span class="text-red-400">String</span>
+<span class="text-gray-500">11 | </span>  }
+<span class="text-gray-500">12 | </span>  <span class="text-blue-400">type</span> <span class="text-green-400">Query</span> {
+<span class="text-gray-500">13 | </span>    user(id: <span class="text-red-400">ID!</span>): <span class="text-green-400">User</span>
+<span class="text-gray-500">14 | </span>  }
+<span class="text-gray-500">15 | </span>\`;
+<span class="text-gray-500">16 | </span>
+<span class="text-gray-500">17 | </span><span class="text-gray-500">// Define Resolvers</span>
+<span class="text-gray-500">18 | </span><span class="text-purple-400">const</span> resolvers = {
+<span class="text-gray-500">19 | </span>  Query: {
+<span class="text-gray-500">20 | </span>    user: <span class="text-blue-400">async</span> (_, { <span class="text-orange-400">id</span> }) => {
+<span class="text-gray-500">21 | </span>      <span class="text-gray-500">// Fetch user</span>
+<span class="text-gray-500">22 | </span>      <span class="text-purple-400">return</span> { id, name: <span class="text-green-400">'GraphQL User'</span> };
+<span class="text-gray-500">23 | </span>    }
+<span class="text-gray-500">24 | </span>  }
+<span class="text-gray-500">25 | </span>};
+<span class="text-gray-500">26 | </span>
+<span class="text-gray-500">27 | </span>api.<span class="text-yellow-400">createGraphQLServer</span>({ typeDefs, resolvers });
+<span class="text-gray-500">28 | </span>api.<span class="text-yellow-400">deploy</span>();`,
+  'Webhooks': `
+<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
+<span class="text-gray-500"> 2 | </span>
+<span class="text-gray-500"> 3 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({ <span class="text-comment-500">/* ... */</span> });
+<span class="text-gray-500"> 4 | </span>
+<span class="text-gray-500"> 5 | </span><span class="text-gray-500">// Register a webhook handler</span>
+<span class="text-gray-500"> 6 | </span>api.<span class="text-yellow-400">onWebhook</span>(<span class="text-green-400">'payment.succeeded'</span>, <span class="text-blue-400">async</span> (<span class="text-orange-400">event</span>) => {
+<span class="text-gray-500"> 7 | </span>  <span class="text-yellow-400">console</span>.<span class="text-blue-400">log</span>(<span class="text-green-400">'Payment Succeeded:'</span>, event.<span class="text-yellow-400">data</span>);
+<span class="text-gray-500"> 8 | </span>  <span class="text-gray-500">// Handle the event (e.g., update database, send email)</span>
+<span class="text-gray-500"> 9 | </span>});
+<span class="text-gray-500">10 | </span>
+<span class="text-gray-500">11 | </span>api.<span class="text-yellow-400">onWebhook</span>(<span class="text-green-400">'user.created'</span>, <span class="text-blue-400">async</span> (<span class="text-orange-400">event</span>) => {
+<span class="text-gray-500">12 | </span>  <span class="text-yellow-400">console</span>.<span class="text-blue-400">log</span>(<span class="text-green-400">'New User Created:'</span>, event.<span class="text-yellow-400">data</span>.<span class="text-yellow-400">user</span>);
+<span class="text-gray-500">13 | </span>});
+<span class="text-gray-500">14 | </span>
+<span class="text-gray-500">15 | </span><span class="text-gray-500">// Ensure your server is running to receive webhooks</span>
+<span class="text-gray-500">16 | </span>api.<span class="text-yellow-400">startServer</span>(); <span class="text-gray-500">// Or api.deploy() if hosted</span>`,
+  'Authentication': `
+<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span>, <span class="text-yellow-400">Auth</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
+<span class="text-gray-500"> 2 | </span>
+<span class="text-gray-500"> 3 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({ <span class="text-comment-500">/* ... */</span> });
+<span class="text-gray-500"> 4 | </span>
+<span class="text-gray-500"> 5 | </span><span class="text-gray-500">// Protect an endpoint with JWT authentication</span>
+<span class="text-gray-500"> 6 | </span>api.<span class="text-yellow-400">createEndpoint</span>({
+<span class="text-gray-500"> 7 | </span>  path: <span class="text-green-400">'/me'</span>,
+<span class="text-gray-500"> 8 | </span>  method: <span class="text-green-400">'GET'</span>,
+<span class="text-gray-500"> 9 | </span>  middleware: [Auth.<span class="text-yellow-400">verifyJWT</span>()], <span class="text-gray-500">// Add JWT auth middleware</span>
+<span class="text-gray-500">10 | </span>  <span class="text-blue-400">async</span> <span class="text-yellow-400">handler</span>(<span class="text-orange-400">req</span>, <span class="text-orange-400">res</span>) {
+<span class="text-gray-500">11 | </span>    <span class="text-gray-500">// req.user will contain the decoded JWT payload</span>
+<span class="text-gray-500">12 | </span>    <span class="text-purple-400">return</span> res.<span class="text-yellow-400">json</span>(req.<span class="text-yellow-400">user</span>);
+<span class="text-gray-500">13 | </span>  }
+<span class="text-gray-500">14 | </span>});
+<span class="text-gray-500">15 | </span>
+<span class="text-gray-500">16 | </span><span class="text-gray-500">// Example: Generate a token (typically done on login/signup)</span>
+<span class="text-gray-500">17 | </span><span class="text-purple-400">const</span> userId = <span class="text-green-400">'user123'</span>;
+<span class="text-gray-500">18 | </span><span class="text-purple-400">const</span> token = Auth.<span class="text-yellow-400">generateJWT</span>({ userId, role: <span class="text-green-400">'admin'</span> });
+<span class="text-gray-500">19 | </span><span class="text-yellow-400">console</span>.<span class="text-blue-400">log</span>(<span class="text-green-400">'Generated JWT:'</span>, token);
+<span class="text-gray-500">20 | </span>
+<span class="text-gray-500">21 | </span>api.<span class="text-yellow-400">deploy</span>();`
+};
+const initialCode = codeExamples['REST API'];
 ---
+
 <section class="bg-slate-900 text-white py-20">
   <div class="container mx-auto px-6 text-center">
     <h2 class="text-4xl font-bold mb-4">Simple, powerful, and intuitive</h2>
     <p class="text-gray-400 mb-12 text-lg">Just a few lines of code to get your API up and running.</p>
 
     <div class="bg-gray-800 rounded-lg shadow-xl text-left max-w-4xl mx-auto">
-      <div class="flex items-center justify-between p-4 border-b border-gray-700">
-        <span class="text-gray-400 text-sm">Example.js</span>
-        <button class="text-gray-400 hover:text-white" title="Copy to clipboard">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-        </button>
+      <div class="flex items-center justify-between p-3 border-b border-gray-700">
+        <div class="flex space-x-1" id="code-tabs">
+          {Object.keys(codeExamples).map((key, index) => (
+            <div
+              data-example-key={key}
+              class={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors duration-200 ease-in-out
+                ${index === 0 ? 'text-blue-400 font-semibold' : 'text-gray-400 hover:text-blue-400 hover:bg-gray-700/30'}`}
+            >
+              {key}
+            </div>
+          ))}
+        </div>
+        <div class="relative"> {/* Wrapper for tooltip positioning */}
+          <button id="copy-button" class="text-gray-400 hover:text-white p-1.5 rounded-md hover:bg-gray-700 transition-colors">
+            <Copy class="w-4 h-4" />
+          </button>
+          <span id="copy-tooltip" class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-700 text-white text-xs px-2 py-1 rounded-md opacity-0 transition-opacity duration-200 pointer-events-none">
+            Copy to clipboard
+          </span>
+        </div>
       </div>
       <div class="p-4 overflow-x-auto">
-        <pre class="text-sm">
-<code class="language-javascript whitespace-pre font-mono" is:raw>
-<span class="text-gray-500"> 1 | </span><span class="text-purple-400">import</span> { <span class="text-yellow-400">DevAPI</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@devapi/client'</span>;
-<span class="text-gray-500"> 2 | </span>
-<span class="text-gray-500"> 3 | </span><span class="text-gray-500">// Initialize the client</span>
-<span class="text-gray-500"> 4 | </span><span class="text-purple-400">const</span> api = <span class="text-blue-400">new</span> <span class="text-yellow-400">DevAPI</span>({
-<span class="text-gray-500"> 5 | </span>  apiKey: <span class="text-green-400">'YOUR_API_KEY'</span>, <span class="text-gray-500">// Get yours from devapi.app</span>
-<span class="text-gray-500"> 6 | </span>  apiSecret: <span class="text-green-400">'YOUR_API_SECRET'</span>
-<span class="text-gray-500"> 7 | </span>});
-<span class="text-gray-500"> 8 | </span>
-<span class="text-gray-500"> 9 | </span><span class="text-gray-500">// Create a new endpoint</span>
-<span class="text-gray-500">10 | </span><span class="text-purple-400">const</span> userEndpoint = api.<span class="text-yellow-400">createEndpoint</span>({
-<span class="text-gray-500">11 | </span>  path: <span class="text-green-400">'/users/:id'</span>,
-<span class="text-gray-500">12 | </span>  method: <span class="text-green-400">'GET'</span>,
-<span class="text-gray-500">13 | </span>  <span class="text-blue-400">async</span> <span class="text-yellow-400">handler</span>(<span class="text-orange-400">req</span>, <span class="text-orange-400">res</span>) {
-<span class="text-gray-500">14 | </span>    <span class="text-purple-400">const</span> { <span class="text-orange-400">id</span> } = req.<span class="text-yellow-400">params</span>;
-<span class="text-gray-500">15 | </span>    <span class="text-gray-500">// Fetch user from database or another service</span>
-<span class="text-gray-500">16 | </span>    <span class="text-purple-400">const</span> user = { id, name: <span class="text-green-400">'Jane Doe'</span>, email: <span class="text-green-400">'jane@example.com'</span> };
-<span class="text-gray-500">17 | </span>    <span class="text-purple-400">return</span> res.<span class="text-yellow-400">json</span>(user);
-<span class="text-gray-500">18 | </span>  }
-<span class="text-gray-500">19 | </span>});
-<span class="text-gray-500">20 | </span>
-<span class="text-gray-500">21 | </span><span class="text-gray-500">// Deploy your API with one command</span>
-<span class="text-gray-500">22 | </span>api.<span class="text-yellow-400">deploy</span>().<span class="text-yellow-400">then</span>(() => {
-<span class="text-gray-500">23 | </span>  <span class="text-yellow-400">console</span>.<span class="text-blue-400">log</span>(<span class="text-green-400">'🚀 API deployed successfully!'</span>);
-<span class="text-gray-500">24 | </span>});
-</code>
+        <pre class="text-sm"><code id="code-display" class="language-javascript whitespace-pre font-mono" is:raw>
+            {initialCode}
+          </code>
         </pre>
       </div>
     </div>
   </div>
 </section>
+
+<script define:vars={{ codeExamples }}>
+  const tabsContainer = document.getElementById('code-tabs');
+  const codeDisplay = document.getElementById('code-display');
+  const copyButton = document.getElementById('copy-button');
+  const copyTooltip = document.getElementById('copy-tooltip');
+
+  let currentCode = codeExamples['REST API'];
+
+  tabsContainer.addEventListener('click', (event) => {
+    const target = event.target.closest('div[data-example-key]');
+    if (!target || !target.dataset.exampleKey) return;
+
+    const exampleKey = target.dataset.exampleKey;
+    currentCode = codeExamples[exampleKey];
+    codeDisplay.innerHTML = currentCode;
+
+    // Update active tab style
+    tabsContainer.querySelectorAll('div[data-example-key]').forEach(tab => {
+      tab.classList.remove('text-blue-400', 'font-semibold');
+      tab.classList.add('text-gray-400', 'hover:text-blue-400', 'hover:bg-gray-700/30');
+    });
+    target.classList.add('text-blue-400', 'font-semibold');
+    target.classList.remove('text-gray-400', 'hover:text-blue-400', 'hover:bg-gray-700/30');
+  });
+
+  copyButton.addEventListener('mouseenter', () => {
+    if (copyTooltip.textContent === 'Copied to Clipboard!') return; 
+    copyTooltip.classList.remove('opacity-0', 'font-semibold');
+    copyTooltip.classList.add('opacity-100');
+  });
+
+  copyButton.addEventListener('mouseleave', () => {
+    // Only hide if not in "Copied!" or "Failed to copy" state
+    if (copyTooltip.textContent === 'Copy to clipboard') {
+        copyTooltip.classList.remove('opacity-100');
+        copyTooltip.classList.add('opacity-0');
+    }
+  });
+
+  copyButton.addEventListener('click', () => {
+    const tempTextArea = document.createElement('textarea');
+    // Clean the HTML to get plain text: remove span tags
+    let plainText = currentCode.replace(new RegExp('<span class="[^"]*">(\\s*\\d+\\s*\\|\\s*)<\\/span>', 'g'), '$1'); // Keep line numbers
+    plainText = plainText.replace(new RegExp('<\\\\/?span[^>]*>', 'g'), ''); // Remove other spans
+    plainText = plainText.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'); // Decode HTML entities
+
+    // Remove line numbers for clipboard
+    plainText = plainText.split('\\n').map(line => line.replace(/^\\s*\\d+\\s*\\|\\s*/, '')).join('\\n').trim();
+
+    tempTextArea.value = plainText;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    try {
+      document.execCommand('copy');
+      
+      const icon = copyButton.querySelector('svg');
+      if (icon) icon.classList.add('text-green-500');
+      copyTooltip.textContent = 'Copied to Clipboard!';
+      copyTooltip.classList.add('font-semibold'); // Make text bold
+      copyTooltip.classList.remove('opacity-0'); // Ensure visible
+      copyTooltip.classList.add('opacity-100');
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove('text-green-500');
+        copyTooltip.textContent = 'Copy to clipboard';
+        copyTooltip.classList.remove('font-semibold'); // Remove bold
+        // Only hide if mouse is not over the button
+        if (!copyButton.matches(':hover')) {
+          copyTooltip.classList.remove('opacity-100');
+          copyTooltip.classList.add('opacity-0');
+        }
+      }, 2000);
+
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      copyTooltip.textContent = 'Failed to copy'; // Provide feedback for error
+      copyTooltip.classList.add('font-semibold'); // Make error text bold
+      copyTooltip.classList.remove('opacity-0');
+      copyTooltip.classList.add('opacity-100');
+      setTimeout(() => {
+        copyTooltip.textContent = 'Copy to clipboard';
+        copyTooltip.classList.remove('font-semibold'); // Remove bold
+         if (!copyButton.matches(':hover')) {
+            copyTooltip.classList.remove('opacity-100');
+            copyTooltip.classList.add('opacity-0');
+        }
+      }, 2000);
+    }
+    document.body.removeChild(tempTextArea);
+  });
+</script>
+
+<style>
+  /* ... existing styles ... */
+  .bg-gray-800 {
+    background-color: #161e2d; /* Slightly darker terminal background */
+  }
+  /* Custom scrollbar for WebKit browsers */
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: #1f2937; /* scrollbar track */
+    border-radius: 4px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #374151; /* scrollbar thumb */
+    border-radius: 4px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #4b5563; /* scrollbar thumb on hover */
+  }
+</style>
