@@ -93,7 +93,7 @@ const codeExamples = {
 <span class="text-gray-500">20 | </span>
 <span class="text-gray-500">21 | </span>api.<span class="text-yellow-400">deploy</span>();`
 };
-const initialCode = codeExamples['REST API'];
+
 ---
 
 <section class="bg-slate-900 text-white py-20">
@@ -124,9 +124,7 @@ const initialCode = codeExamples['REST API'];
         </div>
       </div>
       <div class="p-4 overflow-x-auto">
-        <pre class="text-sm"><code id="code-display" class="language-javascript whitespace-pre font-mono" is:raw>
-            {initialCode}
-          </code>
+        <pre class="text-sm"><code id="code-display" class="language-javascript whitespace-pre font-mono" is:raw>{/* Initial content is now set by client-side script */}</code>
         </pre>
       </div>
     </div>
@@ -138,6 +136,11 @@ const initialCode = codeExamples['REST API'];
   const codeDisplay = document.getElementById('code-display');
   const copyButton = document.getElementById('copy-button');
   const copyTooltip = document.getElementById('copy-tooltip');
+
+  // Set initial content for the code display
+  if (codeDisplay) {
+    codeDisplay.innerHTML = codeExamples['REST API'];
+  }
 
   let currentCode = codeExamples['REST API'];
 
@@ -165,7 +168,6 @@ const initialCode = codeExamples['REST API'];
   });
 
   copyButton.addEventListener('mouseleave', () => {
-    // Only hide if not in "Copied!" or "Failed to copy" state
     if (copyTooltip.textContent === 'Copy to clipboard') {
         copyTooltip.classList.remove('opacity-100');
         copyTooltip.classList.add('opacity-0');

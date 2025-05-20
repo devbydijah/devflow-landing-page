@@ -1,26 +1,33 @@
 ---
 // src/components/Hero.astro
+import { ChevronRight, Minus, ArrowRight } from 'lucide-astro';
 ---
 <section class="bg-transparent text-white py-20">
   <div class="container mx-auto flex flex-col md:flex-row items-center px-6">
-    <div class="md:w-1/2 mb-10 md:mb-0">
-      <h2 class="text-lg text-gray-400 mb-2">> DevAPI</h2>
-      <h1 class="text-5xl font-bold mb-6 leading-tight">
-        The Developer-First API <br /> Platform
+    <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
+      <h2 class="text-lg text-blue-500 font-semibold mb-4 flex items-center justify-center md:justify-start">
+        <div class="relative flex items-center mr-1">
+          <ChevronRight class="w-6 h-6" />
+          <Minus class="w-6 h-6 absolute left-[0.3rem] top-[0.5rem]" /> 
+        </div>
+        <span class="ml-1">DevAPI</span>
+      </h2>
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+        The <span class="text-blue-500">Developer-First API</span> <br /> Platform
       </h1>
-      <p class="text-gray-300 mb-8 text-lg">
+      <p class="text-gray-400 mb-8 text-lg md:text-xl">
         Build, test, and deploy APIs in minutes instead of days. Our platform streamlines the entire development workflow.
       </p>
-      <div class="flex space-x-4">
-        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
-          Get Started &rarr;
+      <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md text-lg transition-colors duration-300 flex items-center justify-center">
+          Get Started <ArrowRight class="w-5 h-5 ml-2" />
         </a>
-        <a href="#" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
+        <a href="#" class="bg-slate-700 hover:bg-slate-600 text-gray-200 font-semibold py-3 px-6 rounded-md text-lg transition-colors duration-300 flex items-center justify-center">
           Read the Docs
         </a>
       </div>
     </div>
-    <div class="md:w-1/2">
+    <div class="md:w-1/2 mt-10 md:mt-0">
       <div class="bg-gray-800 p-4 rounded-lg shadow-xl transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
         <div class="flex items-center mb-2">
           <span class="h-3 w-3 bg-red-500 rounded-full mr-2"></span>
