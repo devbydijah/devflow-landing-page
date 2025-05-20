@@ -61,7 +61,7 @@ This document contains instrutions for the development of a **DevAPI Landing Pag
 - **Lucide React:** Icons  
 - **Performance:** Optimized loading, smooth scroll, responsive
 
-## Guidelines
+## Project Guidelines
 
 - **Use Astro for page structure and routing; React (TSX) for UI components.**
 - **All styling via Tailwind CSS.** Avoid inline/global styles unless necessary.
