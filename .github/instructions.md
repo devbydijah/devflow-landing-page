@@ -1,8 +1,8 @@
-# Copilot Custom Instructions: DevAPI Landing Page
+# Project Custom Instructions: DevAPI Landing Page
 
 ## Project Overview
 
-You are assisting with the development of the **DevAPI Landing Page**—a modern, developer-centric landing page for an API platform. The stack uses **Astro** (for page composition/routing), **React** (for interactive UI components, written in TypeScript), and **Tailwind CSS** (for all styling). Code must be clean, responsive, and aligned with best practices for developer experience and accessibility.
+This document contains instrutions for the development of a **DevAPI Landing Page**—a modern, developer-centric landing page for an API platform. The stack uses **Astro** (for page composition/routing), **React** (for interactive UI components, written in TypeScript), and **Tailwind CSS** (for all styling). Code must be clean, responsive, and aligned with best practices for developer experience and accessibility.
 
 ## Key Features (Current Implementation)
 
@@ -61,7 +61,7 @@ You are assisting with the development of the **DevAPI Landing Page**—a modern
 - **Lucide React:** Icons  
 - **Performance:** Optimized loading, smooth scroll, responsive
 
-## Copilot Guidelines
+## Guidelines
 
 - **Use Astro for page structure and routing; React (TSX) for UI components.**
 - **All styling via Tailwind CSS.** Avoid inline/global styles unless necessary.
