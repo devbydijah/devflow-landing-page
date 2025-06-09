@@ -1,5 +1,6 @@
 ---
 import { ChevronRight, Minus, ArrowRight } from 'lucide-astro';
+import InteractiveTerminal from './InteractiveTerminal.tsx'; // Import the new component
 ---
 <section class="bg-transparent text-white py-20">
   <div class="container mx-auto flex flex-col md:flex-row items-center px-6">
@@ -27,24 +28,7 @@ import { ChevronRight, Minus, ArrowRight } from 'lucide-astro';
       </div>
     </div>
     <div class="md:w-1/2 mt-10 md:mt-0">
-      <div class="bg-gray-800 p-4 rounded-lg shadow-xl transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-        <div class="flex items-center mb-2">
-          <span class="h-3 w-3 bg-red-500 rounded-full mr-2"></span>
-          <span class="h-3 w-3 bg-yellow-500 rounded-full mr-2"></span>
-          <span class="h-3 w-3 bg-green-500 rounded-full"></span>
-          <span class="ml-auto text-gray-400 text-sm">terminal</span>
-        </div>
-        <pre class="text-sm text-gray-300 whitespace-pre-wrap">
-<code>
-<span class="text-green-400">$</span> npm install @devapi/client
-<span class="text-green-400">$</span> devapi init
-<span class="text-gray-500">✓</span> Creating your API environment...
-<span class="text-gray-500">✓</span> Generating authentication keys...
-<span class="text-gray-500">✓</span> Setting up project config...
-<span class="text-green-400">🚀 Success!</span> Your API is ready at: <a href="#" class="text-blue-400 underline hover:text-blue-300">https://api.devapi.app/your-username</a>
-</code>
-</pre>
-      </div>
+      <InteractiveTerminal client:visible />
     </div>
   </div>
 </section>
