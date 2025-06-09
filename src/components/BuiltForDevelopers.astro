@@ -1,38 +1,72 @@
 ---
-import { Zap, ShieldCheck, Network } from 'lucide-astro';
+import { Zap, ShieldCheck, Network, ServerCrash } from 'lucide-astro'; // Added ServerCrash for error case
+
+interface Feature {
+  id: string;
+  icon: string; // Icon name as string
+  title: string;
+  description: string;
+}
+
+let features: Feature[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(new URL('/api/features', Astro.url));
+  if (!response.ok) {
+    throw new Error(`Failed to fetch features: ${response.status} ${response.statusText}`);
+  }
+  features = await response.json();
+} catch (e: any) {
+  console.error(e);
+  error = e.message || "Could not load features.";
+  // Fallback or default features can be defined here if needed
+  features = [
+    { id: "fallback1", icon: "Zap", title: "Feature Loading Error", description: "Could not load feature details. Please try again later." },
+    { id: "fallback2", icon: "ShieldCheck", title: "Feature Loading Error", description: "Could not load feature details. Please try again later." },
+    { id: "fallback3", icon: "Network", title: "Feature Loading Error", description: "Could not load feature details. Please try again later." },
+  ];
+}
+
+// Map icon names to Lucide components
+const iconComponents: Record<string, any> = {
+  Zap,
+  ShieldCheck,
+  Network,
+  ServerCrash // For error display
+};
 ---
 <section id="features" class="bg-slate-900 text-white py-20">
   <div class="container mx-auto px-6 text-center">
     <h2 class="text-4xl font-bold mb-4">Built for developers, by developers</h2>
     <p class="text-gray-400 mb-12 text-lg">Everything you need to build powerful APIs with less code and more speed.</p>
+    
+    {error && (
+      <div class="bg-red-800 border border-red-700 text-white p-6 rounded-lg mb-8 max-w-md mx-auto">
+        <div class="flex items-center mb-2">
+          <ServerCrash class="h-8 w-8 mr-3 text-red-300" />
+          <h3 class="text-xl font-semibold">Error Loading Features</h3>
+        </div>
+        <p class="text-red-200">{error}</p>
+        <p class="text-red-200 mt-2 text-sm">Displaying default feature information.</p>
+      </div>
+    )}
+
     <div class="grid md:grid-cols-3 gap-8">
-      <div class="bg-gray-800 p-8 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-        <div class="text-blue-500 mb-4 inline-block">
-          <Zap class="h-10 w-10" />
-        </div>
-        <h3 class="text-2xl font-bold mb-2">Lightning Fast</h3>
-        <p class="text-gray-400">
-          10ms response times globally. Our infrastructure is optimized for speed so your APIs are always responsive.
-        </p>
-      </div>
-      <div class="bg-gray-800 p-8 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-        <div class="text-blue-500 mb-4 inline-block">
-          <ShieldCheck class="h-10 w-10" />
-        </div>
-        <h3 class="text-2xl font-bold mb-2">Built-in Security</h3>
-        <p class="text-gray-400">
-          Industry-standard authentication and authorization with JWT, OAuth, and API keys out of the box.
-        </p>
-      </div>
-      <div class="bg-gray-800 p-8 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-        <div class="text-blue-500 mb-4 inline-block">
-          <Network class="h-10 w-10" />
-        </div>
-        <h3 class="text-2xl font-bold mb-2">RESTful & GraphQL</h3>
-        <p class="text-gray-400">
-          Support for both RESTful APIs and GraphQL in one unified platform. No compromises.
-        </p>
-      </div>
+      {features.map(feature => {
+        const IconComponent = iconComponents[feature.icon] || ServerCrash; // Fallback to ServerCrash if icon not found
+        return (
+          <div class="bg-gray-800 p-8 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
+            <div class="text-blue-500 mb-4 inline-block">
+              <IconComponent class="h-10 w-10" />
+            </div>
+            <h3 class="text-2xl font-bold mb-2">{feature.title}</h3>
+            <p class="text-gray-400">
+              {feature.description}
+            </p>
+          </div>
+        );
+      })}
     </div>
   </div>
 </section>

@@ -1,62 +1,40 @@
 ---
-import { Check } from 'lucide-astro';
+import { Check, ServerCrash } from 'lucide-astro'; // Added ServerCrash for error case
 
-const plans = [
-  {
-    name: 'Starter',
-    price: '$0',
-    priceSuffix: '/month',
-    features: [
-      '1,000 API calls/month',
-      'Basic rate limiting',
-      'Community support',
-      'Basic analytics',
-    ],
-    buttonText: 'Get Started',
-    bgColor: 'bg-gray-800',
-    textColor: 'text-white',
-    buttonColor: 'bg-gray-700 hover:bg-gray-600 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/30',
-    borderColor: 'border-gray-700',
-    recommended: false,
-  },
-  {
-    name: 'Pro',
-    price: '$49',
-    priceSuffix: '/month',
-    features: [
-      '100,000 API calls/month',
-      'Advanced rate limiting',
-      'Priority support',
-      'Advanced analytics',
-      'Custom domains',
-    ],
-    buttonText: 'Get Started',
-    bgColor: 'bg-gray-800',
-    textColor: 'text-white',
-    buttonColor: 'bg-blue-600 hover:bg-blue-700 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/30',
-    borderColor: 'border-blue-600',
-    recommended: true,
-  },
-  {
-    name: 'Enterprise',
-    price: '$199',
-    priceSuffix: '/month',
-    features: [
-      'Unlimited API calls',
-      'Custom rate limiting',
-      '24/7 dedicated support',
-      'Advanced analytics',
-      'Custom domains',
-      'SLA guarantee',
-    ],
-    buttonText: 'Get Started',
-    bgColor: 'bg-gray-800',
-    textColor: 'text-white',
-    buttonColor: 'bg-gray-700 hover:bg-gray-600 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/30',
-    borderColor: 'border-gray-700',
-    recommended: false,
-  },
-];
+interface Plan {
+  id: string;
+  name: string;
+  price: string;
+  priceSuffix: string;
+  features: string[];
+  buttonText: string;
+  ctaLink: string;
+  bgColor: string;
+  textColor: string;
+  buttonColor: string;
+  borderColor: string;
+  recommended: boolean;
+}
+
+let plans: Plan[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(new URL('/api/pricing', Astro.url));
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pricing plans: ${response.status} ${response.statusText}`);
+  }
+  plans = await response.json();
+} catch (e: any) {
+  console.error(e);
+  error = e.message || "Could not load pricing plans.";
+  // Fallback or default plans
+  plans = [
+    { id: 'starter_fb', name: 'Starter (Error)', price: '$0', priceSuffix: '/month', features: ['Data unavailable'], buttonText: 'Try Again Later', ctaLink: '#', bgColor: 'bg-gray-800', textColor: 'text-white', buttonColor: 'bg-gray-700', borderColor: 'border-gray-700', recommended: false },
+    { id: 'pro_fb', name: 'Pro (Error)', price: '$XX', priceSuffix: '/month', features: ['Data unavailable'], buttonText: 'Try Again Later', ctaLink: '#', bgColor: 'bg-gray-800', textColor: 'text-white', buttonColor: 'bg-gray-700', borderColor: 'border-gray-700', recommended: true },
+    { id: 'enterprise_fb', name: 'Enterprise (Error)', price: '$YY', priceSuffix: '/month', features: ['Data unavailable'], buttonText: 'Try Again Later', ctaLink: '#', bgColor: 'bg-gray-800', textColor: 'text-white', buttonColor: 'bg-gray-700', borderColor: 'border-gray-700', recommended: false },
+  ];
+}
 ---
 
 <section id="pricing" class="bg-slate-900 text-white py-20">
@@ -64,16 +42,27 @@ const plans = [
     <h2 class="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
     <p class="text-gray-400 mb-12 text-lg">Choose the plan that's right for you</p>
 
+    {error && (
+      <div class="bg-red-800 border border-red-700 text-white p-6 rounded-lg mb-8 max-w-md mx-auto">
+        <div class="flex items-center mb-2">
+          <ServerCrash class="h-8 w-8 mr-3 text-red-300" />
+          <h3 class="text-xl font-semibold">Error Loading Pricing</h3>
+        </div>
+        <p class="text-red-200">{error}</p>
+        <p class="text-red-200 mt-2 text-sm">Displaying default plan information.</p>
+      </div>
+    )}
+
     <div class="grid md:grid-cols-3 gap-8 items-stretch">
-      {plans.map(plan => (
+      {plans.map((plan: Plan) => (
         <div class={`relative p-8 rounded-lg flex flex-col h-full ${plan.bgColor} border-2 ${plan.borderColor} transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30`}>
           {plan.recommended && (
             <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
               Recommended
             </div>
           )}
-          <h3 class="text-2xl font-bold mb-1">{plan.name}</h3>
-          <p class="text-4xl font-extrabold mb-1">{plan.price}<span class="text-xl font-normal text-gray-400">{plan.priceSuffix}</span></p>
+          <h3 class={`text-2xl font-bold mb-1 ${plan.textColor}`}>{plan.name}</h3>
+          <p class={`text-4xl font-extrabold mb-1 ${plan.textColor}`}>{plan.price}<span class="text-xl font-normal text-gray-400">{plan.priceSuffix}</span></p>
           
           <ul class="text-left my-8 space-y-3 flex-grow">
             {plan.features.map(feature => (
@@ -84,7 +73,10 @@ const plans = [
             ))}
           </ul>
 
-          <a href="#" class={`mt-auto ${plan.buttonColor} text-white font-semibold py-3 px-6 rounded-lg w-full block text-center`}>
+          <a 
+            href={plan.ctaLink} 
+            class={`mt-auto ${plan.buttonColor} ${plan.textColor} font-semibold py-3 px-6 rounded-lg w-full block text-center transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg`}
+          >
             {plan.buttonText}
           </a>
         </div>

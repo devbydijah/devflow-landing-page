@@ -1,40 +1,72 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage, type RemoteImageProps } from "astro:assets"; // Changed Image to getImage
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { ArrowRight } from 'lucide-astro';
 
-// Import Pexels photos
-import pexelsPhoto1 from '../assets/pexels-photo-546819.jpeg';
-import pexelsPhoto2 from '../assets/pexels-photo-1181675.jpeg';
-import pexelsPhoto3 from '../assets/pexels-photo-1181671.jpeg';
+// Fetch blog posts, sort by pubDate descending, and take the latest 3
+const allPostsData: CollectionEntry<'blog'>[] = await getCollection('blog');
+const blogPostsData = allPostsData
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 
-const blogPosts = [
-  {
-    date: 'Mar 15, 2025',
-    readingTime: '5 min read',
-    title: 'Building Scalable APIs with DevAPI',
-    description: 'Learn how to build and deploy scalable APIs using our platform\'s advanced features and best practices.',
-    link: '#',
-    image: pexelsPhoto1,
-    alt: 'Close-up of code on a screen',
-  },
-  {
-    date: 'Mar 10, 2025',
-    readingTime: '7 min read',
-    title: 'Authentication Best Practices',
-    description: 'Implement secure authentication in your APIs using our built-in authentication system.',
-    link: '#',
-    image: pexelsPhoto2,
-    alt: 'Person holding a Python programming book',
-  },
-  {
-    date: 'Mar 5, 2025',
-    readingTime: '6 min read',
-    title: 'Optimizing API Performance',
-    description: 'Tips and tricks to optimize your API\'s performance and reduce latency using our platform.',
-    link: '#',
-    image: pexelsPhoto3,
-    alt: 'Developer working on multiple monitors with code displayed',
-  },
-];
+// Process posts to include optimized image data
+// Define a more accurate type for what we expect after getImage
+type OptimizedImageAttrs = { src: string; attributes: Record<string, any>; alt: string; };
+
+const blogPosts = await Promise.all(
+  blogPostsData.map(async (post) => {
+    let currentOptimizedImageProps: OptimizedImageAttrs | null = null;
+    if (post.data.image && post.data.image.url) {
+      try {
+        const imageResult = await getImage({
+          src: post.data.image.url, // Path to image in /public
+          // alt is not an option for getImage, it's a prop of the <img> or <Image>
+          widths: [400, 600, 800], 
+          formats: ["avif", "webp"], 
+        });
+        currentOptimizedImageProps = {
+          src: imageResult.src,
+          attributes: imageResult.attributes,
+          alt: post.data.image.alt, // Use original alt from frontmatter
+        };
+      } catch (e) {
+        console.error(`Failed to optimize image ${post.data.image.url}:`, e);
+      }
+    }
+    return {
+      ...post, // Spread original post properties
+      processedImage: currentOptimizedImageProps, // Use a different name to avoid conflict
+    };
+  })
+);
+
+interface ProcessedBlogPost {
+  id: CollectionEntry<'blog'>['id'];
+  slug: CollectionEntry<'blog'>['slug'];
+  body: CollectionEntry<'blog'>['body'];
+  collection: CollectionEntry<'blog'>['collection'];
+  data: CollectionEntry<'blog'>['data']; // This contains original image data { url, alt }
+  render: CollectionEntry<'blog'>['render'];
+  processedImage: OptimizedImageAttrs | null; // Updated property name and type
+}
+
+// Helper function to format date
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+// Placeholder for reading time - this would typically be calculated or stored in frontmatter
+function calculateReadingTime(content: string): string {
+  const wordsPerMinute = 200;
+  const noOfWords = content.split(/\s/g).length;
+  const minutes = noOfWords / wordsPerMinute;
+  const readTime = Math.ceil(minutes);
+  return `${readTime} min read`;
+}
 ---
 
 <section id="blog" class="bg-transparent text-white py-20">
@@ -45,23 +77,48 @@ const blogPosts = [
     </div>
 
     <div class="grid md:grid-cols-3 gap-8">
-      {blogPosts.map(post => (
-        <div class="bg-gray-800 rounded-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-          <a href={post.link} class="block">
-            <Image src={post.image} alt={post.alt} class="w-full h-48 object-cover" densities={[1, 1.5, 2]} />
-          </a>
-          <div class="p-6 flex flex-col flex-grow">
-            <p class="text-gray-400 text-sm mb-1">{post.date} &bull; {post.readingTime}</p>
-            <h3 class="text-xl font-bold mb-2">
-              <a href={post.link} class="hover:text-blue-400 transition-colors">{post.title}</a>
-            </h3>
-            <p class="text-gray-300 text-sm mb-4 flex-grow">{post.description}</p>
-            <a href={post.link} class="text-blue-500 hover:text-blue-400 font-semibold text-sm self-start transition-colors duration-300">
-              Read more &rarr;
-            </a>
+      {blogPosts.map((post) => {
+        return (
+          <div class="bg-gray-800 rounded-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
+            {post.data.image && post.data.image.url && (
+              // The Image component will attempt to resolve paths from /src or /public.
+              // Ensure the paths in your markdown frontmatter are correct, e.g., 
+              // '/assets/blog/image.jpg' or similar public paths.
+              <a href={`/blog/${post.slug}/`} class="block">
+                {post.processedImage ? (
+                  <img 
+                    src={post.processedImage.src}
+                    alt={String(post.processedImage.alt)}
+                    {...post.processedImage.attributes}
+                    class="w-full h-48 object-cover"
+                    loading="lazy"
+                  />
+                ) : post.data.image && post.data.image.url && (
+                  // Fallback to a simple img tag if optimization failed or not applicable
+                  <img 
+                    src={post.data.image.url} 
+                    alt={String(post.data.image.alt)}
+                    class="w-full h-48 object-cover"
+                    loading="lazy"
+                  />
+                )}
+              </a>
+            )}
+            <div class="p-6 flex flex-col flex-grow">
+              <p class="text-gray-400 text-sm mb-1">
+                {formatDate(post.data.pubDate)} &bull; {calculateReadingTime(post.body)}
+              </p>
+              <h3 class="text-xl font-bold mb-2">
+                <a href={`/blog/${post.slug}/`} class="hover:text-blue-400 transition-colors">{post.data.title}</a>
+              </h3>
+              <p class="text-gray-300 text-sm mb-4 flex-grow">{post.data.description}</p>
+              <a href={`/blog/${post.slug}/`} class="text-blue-500 hover:text-blue-400 font-semibold text-sm self-start transition-colors duration-300 flex items-center">
+                Read more <ArrowRight class="w-4 h-4 ml-1" />
+              </a>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 </section>
