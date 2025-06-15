@@ -1,54 +1,40 @@
 ---
-import { getImage, type RemoteImageProps } from "astro:assets"; // Changed Image to getImage
-import { getCollection, type CollectionEntry } from 'astro:content';
+// src/components/BlogSection.astro
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import { ArrowRight } from 'lucide-astro';
+import { getPexelsImage } from '../lib/pexels';
 
-// Fetch blog posts, sort by pubDate descending, and take the latest 3
-const allPostsData: CollectionEntry<'blog'>[] = await getCollection('blog');
-const blogPostsData = allPostsData
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+// 1. Fetch the base post data
+const postsData = await getCollection('blog');
 
-// Process posts to include optimized image data
-// Define a more accurate type for what we expect after getImage
-type OptimizedImageAttrs = { src: string; attributes: Record<string, any>; alt: string; };
-
-const blogPosts = await Promise.all(
-  blogPostsData.map(async (post) => {
-    let currentOptimizedImageProps: OptimizedImageAttrs | null = null;
-    if (post.data.image && post.data.image.url) {
-      try {
-        const imageResult = await getImage({
-          src: post.data.image.url, // Path to image in /public
-          // alt is not an option for getImage, it's a prop of the <img> or <Image>
-          widths: [400, 600, 800], 
-          formats: ["avif", "webp"], 
-        });
-        currentOptimizedImageProps = {
-          src: imageResult.src,
-          attributes: imageResult.attributes,
-          alt: post.data.image.alt, // Use original alt from frontmatter
-        };
-      } catch (e) {
-        console.error(`Failed to optimize image ${post.data.image.url}:`, e);
-      }
-    }
+// 2. Fetch all cover images from Pexels concurrently
+const postsWithImages = await Promise.all(
+  postsData.map(async (post) => {
+    const { imageUrl, imageAlt } = await getPexelsImage(post.data.coverImageQuery);
     return {
-      ...post, // Spread original post properties
-      processedImage: currentOptimizedImageProps, // Use a different name to avoid conflict
+      ...post,
+      data: {
+        ...post.data,
+        image: {
+          url: imageUrl,
+          alt: imageAlt,
+        },
+      },
     };
   })
 );
 
-interface ProcessedBlogPost {
-  id: CollectionEntry<'blog'>['id'];
-  slug: CollectionEntry<'blog'>['slug'];
-  body: CollectionEntry<'blog'>['body'];
-  collection: CollectionEntry<'blog'>['collection'];
-  data: CollectionEntry<'blog'>['data']; // This contains original image data { url, alt }
-  render: CollectionEntry<'blog'>['render'];
-  processedImage: OptimizedImageAttrs | null; // Updated property name and type
-}
+// 3. Sort the enriched posts by date
+const sortedPosts = postsWithImages.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const getReadingTime = (content: string) => {
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
+};
 
 // Helper function to format date
 function formatDate(date: Date) {
@@ -58,15 +44,6 @@ function formatDate(date: Date) {
     day: 'numeric',
   }).format(date);
 }
-
-// Placeholder for reading time - this would typically be calculated or stored in frontmatter
-function calculateReadingTime(content: string): string {
-  const wordsPerMinute = 200;
-  const noOfWords = content.split(/\s/g).length;
-  const minutes = noOfWords / wordsPerMinute;
-  const readTime = Math.ceil(minutes);
-  return `${readTime} min read`;
-}
 ---
 
 <section id="blog" class="bg-transparent text-white py-20">
@@ -74,51 +51,33 @@ function calculateReadingTime(content: string): string {
     <div class="text-center mb-12">
       <h2 class="text-4xl font-bold">Latest from our blog</h2>
       <p class="text-gray-400 text-lg">Insights, tutorials, and updates from our team</p>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-8">
-      {blogPosts.map((post) => {
-        return (
-          <div class="bg-gray-800 rounded-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-            {post.data.image && post.data.image.url && (
-              // The Image component will attempt to resolve paths from /src or /public.
-              // Ensure the paths in your markdown frontmatter are correct, e.g., 
-              // '/assets/blog/image.jpg' or similar public paths.
-              <a href={`/blog/${post.slug}/`} class="block">
-                {post.processedImage ? (
-                  <img 
-                    src={post.processedImage.src}
-                    alt={String(post.processedImage.alt)}
-                    {...post.processedImage.attributes}
-                    class="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                ) : post.data.image && post.data.image.url && (
-                  // Fallback to a simple img tag if optimization failed or not applicable
-                  <img 
-                    src={post.data.image.url} 
-                    alt={String(post.data.image.alt)}
-                    class="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                )}
+    </div>    <div class="grid md:grid-cols-3 gap-8">
+      {sortedPosts.slice(0, 3).map((post) => (
+        <div class="bg-gray-800 rounded-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
+          <a href={`/blog/${post.slug}/`} class="block">
+            <img
+              src={post.data.image.url}
+              alt={post.data.image.alt}
+              class="w-full h-48 object-cover"
+              loading="lazy"
+            />
+          </a>
+          <div class="p-6 flex flex-col flex-grow">
+            <p class="text-gray-400 text-sm mb-1">
+              {formatDate(post.data.pubDate)} &bull; {getReadingTime(post.body)} min read
+            </p>
+            <h3 class="text-xl font-bold mb-2">
+              <a href={`/blog/${post.slug}/`} class="hover:text-blue-400 transition-colors">
+                {post.data.title}
               </a>
-            )}
-            <div class="p-6 flex flex-col flex-grow">
-              <p class="text-gray-400 text-sm mb-1">
-                {formatDate(post.data.pubDate)} &bull; {calculateReadingTime(post.body)}
-              </p>
-              <h3 class="text-xl font-bold mb-2">
-                <a href={`/blog/${post.slug}/`} class="hover:text-blue-400 transition-colors">{post.data.title}</a>
-              </h3>
-              <p class="text-gray-300 text-sm mb-4 flex-grow">{post.data.description}</p>
-              <a href={`/blog/${post.slug}/`} class="text-blue-500 hover:text-blue-400 font-semibold text-sm self-start transition-colors duration-300 flex items-center">
-                Read more <ArrowRight class="w-4 h-4 ml-1" />
-              </a>
-            </div>
+            </h3>
+            <p class="text-gray-300 text-sm mb-4 flex-grow">{post.data.description}</p>
+            <a href={`/blog/${post.slug}/`} class="text-blue-500 hover:text-blue-400 font-semibold text-sm self-start transition-colors duration-300 flex items-center">
+              Read more <ArrowRight class="w-4 h-4 ml-1" />
+            </a>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   </div>
 </section>

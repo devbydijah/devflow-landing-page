@@ -1,11 +1,38 @@
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = async () => {
+  return new Response(
+    JSON.stringify({
+      message: "Contact API endpoint",
+      description:
+        "Send a POST request with name, email, and message fields to submit a contact form.",
+      methods: ["GET", "POST"],
+      example: {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: {
+          name: "Your Name",
+          email: "your.email@example.com",
+          message: "Your message here",
+        },
+      },
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+};
 
 export const POST: APIRoute = async ({ request }) => {
   if (request.headers.get("Content-Type") !== "application/json") {
-    return new Response(JSON.stringify({ message: "Content-Type must be application/json" }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({ message: "Content-Type must be application/json" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   try {
@@ -14,25 +41,40 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Basic validation
     if (!name || !email || !message) {
-      return new Response(JSON.stringify({ message: "Missing required fields (name, email, message)" }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          message: "Missing required fields (name, email, message)",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
-    if (typeof name !== 'string' || typeof email !== 'string' || typeof message !== 'string') {
-      return new Response(JSON.stringify({ message: "Invalid data types for fields." }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof message !== "string"
+    ) {
+      return new Response(
+        JSON.stringify({ message: "Invalid data types for fields." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     // Email validation regex (simple one)
     if (!/\S+@\S+\.\S+/.test(email)) {
-      return new Response(JSON.stringify({ message: "Invalid email format." }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({ message: "Invalid email format." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     // Process the data (e.g., send an email, save to database)
@@ -43,18 +85,27 @@ export const POST: APIRoute = async ({ request }) => {
     console.log("Message:", message);
 
     // Simulate a delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return new Response(JSON.stringify({ message: "Message received successfully! We'll be in touch." }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    return new Response(
+      JSON.stringify({
+        message: "Message received successfully! We'll be in touch.",
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error("Error processing contact form:", error);
-    return new Response(JSON.stringify({ message: "An error occurred while processing your request." }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        message: "An error occurred while processing your request.",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };

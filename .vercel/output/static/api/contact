@@ -1,0 +1,1 @@
+{"message":"Contact API endpoint","description":"Send a POST request with name, email, and message fields to submit a contact form.","methods":["GET","POST"],"example":{"method":"POST","headers":{"Content-Type":"application/json"},"body":{"name":"Your Name","email":"your.email@example.com","message":"Your message here"}}}

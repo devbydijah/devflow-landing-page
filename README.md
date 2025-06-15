@@ -2,8 +2,8 @@
 
 > A modern, responsive landing page showcasing advanced frontend development practices with Astro, React, and TypeScript.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://your-demo-url.vercel.app)
-[![GitHub](https://img.shields.io/badge/View-Code-black?style=for-the-badge&logo=github)](https://github.com/yourusername/devflow-landing-page)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://devflow-landing-page.vercel.app)
+[![GitHub](https://img.shields.io/badge/View-Code-black?style=for-the-badge&logo=github)](https://github.com/devbydijah/devflow-landing-page)
 
 ## 🌟 Overview
 
@@ -55,7 +55,7 @@ This project demonstrates professional frontend development skills through a com
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/devflow-landing-page.git
+git clone https://github.com/devbydijah/devflow-landing-page.git
 
 # Navigate to project directory
 cd devflow-landing-page
@@ -167,4 +167,4 @@ This project is for portfolio demonstration purposes.
 
 ---
 
-**Built with ❤️ to showcase modern frontend development skills**
+### Built with ❤️ to showcase modern frontend development skills

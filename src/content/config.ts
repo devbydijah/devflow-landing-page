@@ -7,10 +7,7 @@ const blogCollection = defineCollection({
     description: z.string(),
     pubDate: z.date(),
     author: z.string().default('The DevAPI Team'),
-    image: z.object({
-      url: z.string(),
-      alt: z.string(),
-    }).optional(),
+    coverImageQuery: z.string(), // Changed from image object to string query
     tags: z.array(z.string()).default([]),
   }),
 });

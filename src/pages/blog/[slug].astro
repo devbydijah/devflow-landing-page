@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import Layout from '../../layouts/Layout.astro'; // Adjust layout path if needed
-import { getImage } from 'astro:assets'; // Changed Image to getImage
+import Layout from '../../layouts/Layout.astro';
+import { getPexelsImage } from '../../lib/pexels';
 
 export async function getStaticPaths() {
   const blogEntries: CollectionEntry<'blog'>[] = await getCollection('blog');
@@ -18,27 +18,10 @@ interface Props {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 
-// Process image
-type OptimizedImageAttrs = { src: string; attributes: Record<string, any>; alt: string; };
-let optimizedImage: OptimizedImageAttrs | null = null;
-if (entry.data.image && entry.data.image.url) {
-  try {
-    const imageResult = await getImage({
-      src: entry.data.image.url,
-      widths: [400, 800, 1200],
-      formats: ["avif", "webp"],
-    });
-    optimizedImage = {
-      src: imageResult.src,
-      attributes: imageResult.attributes,
-      alt: entry.data.image.alt,
-    };
-  } catch (e) {
-    console.error(`Failed to optimize image ${entry.data.image.url} for slug ${entry.slug}:`, e);
-  }
-}
+// Get dynamic image from Pexels
+const { imageUrl, imageAlt } = await getPexelsImage(entry.data.coverImageQuery);
 
-// Helper function to format date (can be moved to a utility file)
+// Helper function to format date
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -50,27 +33,14 @@ function formatDate(date: Date) {
 
 <Layout title={entry.data.title} description={entry.data.description}>
   <article class="prose prose-invert lg:prose-xl max-w-3xl mx-auto py-12 px-6">
-    {optimizedImage ? (
-      <div class="mb-8">
-        <img
-          src={optimizedImage.src}
-          alt={optimizedImage.alt}
-          {...optimizedImage.attributes}
-          class="w-full rounded-lg shadow-lg"
-          loading="lazy"
-        />
-      </div>
-    ) : entry.data.image && entry.data.image.url && (
-      // Fallback for non-optimized image if getImage failed
-      <div class="mb-8">
-        <img
-          src={entry.data.image.url}
-          alt={entry.data.image.alt}
-          class="w-full rounded-lg shadow-lg"
-          loading="lazy"
-        />
-      </div>
-    )}
+    <div class="mb-8">
+      <img
+        src={imageUrl}
+        alt={imageAlt}
+        class="w-full rounded-lg shadow-lg"
+        loading="lazy"
+      />
+    </div>
     <header class="mb-8 text-center">
       <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">{entry.data.title}</h1>
       <p class="text-gray-400 text-lg">

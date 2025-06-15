@@ -23,6 +23,11 @@
     "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
-    "@types/react-syntax-highlighter": "^15.5.13"
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.5.3",
+    "prettier-eslint": "^16.4.2",
+    "typescript": "^4.9.5"
   }
 }
