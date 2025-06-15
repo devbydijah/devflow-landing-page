@@ -33,6 +33,7 @@
     "repo",
     "github",
     "localhost"
+    "Fira",
   ],
   "ignorePaths": [
     "node_modules/**",

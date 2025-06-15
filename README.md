@@ -9,7 +9,7 @@
 
 This project demonstrates professional frontend development skills through a comprehensive API platform landing page. It showcases modern development practices including dynamic data fetching, elegant animations, robust error handling, and responsive design.
 
-![DevAPI Landing Page Preview](https://via.placeholder.com/800x400?text=Add+Your+Screenshot+Here)
+![DevAPI Landing Page Preview](./public/screenshots/devapi-preview.png)
 
 ## ✨ Key Features
 
