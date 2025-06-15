@@ -1,7 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { Copy } from "lucide-react"; // Using lucide-react for consistency
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { Copy } from "lucide-react";
+// Synchronous import for styles (they're lightweight)
 import vscDarkPlus from "react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus";
+
+// Dynamically import the heavy component to reduce bundle size
+const SyntaxHighlighter = lazy(() =>
+  import("react-syntax-highlighter").then((module) => ({
+    default: module.Prism,
+  }))
+);
+
+// A lightweight fallback component to show while loading
+const CodeBlockSkeleton = () => (
+  <div
+    style={{
+      height: "300px",
+      backgroundColor: "#1e1e1e",
+      borderRadius: "0.5rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <div style={{ color: "#666", fontSize: "0.8rem" }}>
+      Loading syntax highlighter...
+    </div>
+  </div>
+);
 
 interface CodeExample {
   id: string;
@@ -116,11 +141,11 @@ const InteractiveCodeDemo: React.FC = () => {
             <button
               key={key}
               onClick={() => setActiveTabKey(key)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors duration-200 ease-in-out
+              className={`px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors duration-200 ease-in-out
                 ${
                   activeTabKey === key
                     ? "text-blue-400 bg-gray-700 font-semibold"
-                    : "text-gray-400 hover:text-blue-400 hover:bg-gray-700/30"
+                    : "text-gray-400 hover:text-blue-400 hover:bg-gray-700/30 font-medium"
                 }`}
             >
               {codeExamples[key].label}
@@ -167,22 +192,24 @@ const InteractiveCodeDemo: React.FC = () => {
               <Copy className="w-3 h-3 mr-1" />{" "}
               {copiedCode ? "Copied!" : "Copy"}
             </button>
-          </div>
-          <SyntaxHighlighter
-            language={activeExampleDetails.language}
-            style={vscDarkPlus}
-            customStyle={{
-              margin: 0,
-              borderRadius: "0 0 0 0.5rem",
-              height: "300px",
-              fontSize: "0.8rem",
-            }}
-            showLineNumbers
-            lineNumberStyle={{ color: "#666", fontSize: "0.7rem" }}
-            wrapLines={true}
-          >
-            {currentCode}
-          </SyntaxHighlighter>
+          </div>{" "}
+          <Suspense fallback={<CodeBlockSkeleton />}>
+            <SyntaxHighlighter
+              language={activeExampleDetails.language}
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                borderRadius: "0 0 0 0.5rem",
+                height: "300px",
+                fontSize: "0.8rem",
+              }}
+              showLineNumbers
+              lineNumberStyle={{ color: "#666", fontSize: "0.7rem" }}
+              wrapLines={true}
+            >
+              {currentCode}
+            </SyntaxHighlighter>
+          </Suspense>
         </div>
 
         {/* Response Display */}
@@ -198,22 +225,24 @@ const InteractiveCodeDemo: React.FC = () => {
               <Copy className="w-3 h-3 mr-1" />{" "}
               {copiedResponse ? "Copied!" : "Copy"}
             </button>
-          </div>
-          <SyntaxHighlighter
-            language="json"
-            style={vscDarkPlus}
-            customStyle={{
-              margin: 0,
-              borderRadius: "0 0 0.5rem 0",
-              height: "300px",
-              fontSize: "0.8rem",
-            }}
-            showLineNumbers
-            lineNumberStyle={{ color: "#666", fontSize: "0.7rem" }}
-            wrapLines={true}
-          >
-            {currentResponse}
-          </SyntaxHighlighter>
+          </div>{" "}
+          <Suspense fallback={<CodeBlockSkeleton />}>
+            <SyntaxHighlighter
+              language="json"
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                borderRadius: "0 0 0.5rem 0",
+                height: "300px",
+                fontSize: "0.8rem",
+              }}
+              showLineNumbers
+              lineNumberStyle={{ color: "#666", fontSize: "0.7rem" }}
+              wrapLines={true}
+            >
+              {currentResponse}
+            </SyntaxHighlighter>
+          </Suspense>
         </div>
       </div>
     </div>
